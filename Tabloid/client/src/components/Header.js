@@ -10,10 +10,13 @@ import {
   NavLink
 } from 'reactstrap';
 import { logout } from '../modules/authManager';
+import { getAllPosts } from '../modules/postManager';
 
 export default function Header({ isLoggedIn }) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+
+
 
   return (
     <div>
@@ -32,6 +35,11 @@ export default function Header({ isLoggedIn }) {
           <Nav navbar>
             {isLoggedIn &&
               <>
+                <NavItem>
+                  <a aria-current="page" className="nav-link"
+                    style={{ cursor: "pointer" }}></a>
+                  <NavLink tag={RRNavLink} to="/Post">All Posts</NavLink>
+                </NavItem>
                 <NavItem>
                   <a aria-current="page" className="nav-link"
                     style={{ cursor: "pointer" }} onClick={logout}>Logout</a>
