@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Tabloid.Repositories;
+using System;
 
 namespace Tabloid
 {
@@ -23,11 +24,8 @@ namespace Tabloid
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IUserProfileRepository, UserProfileRepository>();
-<<<<<<< HEAD
             services.AddTransient<IPostRepository, PostRepository>();
-=======
             services.AddTransient<ITagRepository, TagRepository>();
->>>>>>> 779966dca23dce9b9f297f161c4b3ddf7fc886c5
 
             var firebaseProjectId = Configuration.GetValue<string>("FirebaseProjectId");
             var googleTokenUrl = $"https://securetoken.google.com/{firebaseProjectId}";
