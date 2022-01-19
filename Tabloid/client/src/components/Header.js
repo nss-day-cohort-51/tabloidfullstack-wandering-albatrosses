@@ -10,10 +10,13 @@ import {
   NavLink
 } from 'reactstrap';
 import { logout } from '../modules/authManager';
+import { getAllPosts } from '../modules/postManager';
 
 export default function Header({ isLoggedIn }) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+
+
 
   return (
     <div>
@@ -40,6 +43,14 @@ export default function Header({ isLoggedIn }) {
             {isLoggedIn &&
               <NavItem>
                 <NavLink tag={RRNavLink} to="/tag">Tag Management</NavLink>
+              </NavItem>
+            }
+          </Nav>
+          <Nav className="mr-auto" navbar>
+            { /* When isLoggedIn === true, we will render the Home link */}
+            {isLoggedIn &&
+              <NavItem>
+                <NavLink tag={RRNavLink} to="/Post">Posts</NavLink>
               </NavItem>
             }
           </Nav>
