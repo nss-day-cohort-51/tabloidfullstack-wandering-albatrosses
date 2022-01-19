@@ -36,6 +36,13 @@ export default function Header({ isLoggedIn }) {
               
             }
           </Nav>
+          <Nav className="mr-auto" navbar>
+            {isLoggedIn &&
+              <NavItem>
+                <NavLink tag={RRNavLink} to="/tag">Tag Management</NavLink>
+              </NavItem>
+            }
+          </Nav>
           <Nav navbar>
             {isLoggedIn &&
               <>
