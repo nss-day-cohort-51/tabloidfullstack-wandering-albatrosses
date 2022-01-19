@@ -89,6 +89,8 @@ left join UserProfile Up on Up.Id = C.UserProfileId
                     DbUtils.AddParameter(cmd, "@Subject", comment.Subject);
 
                     comment.Id = (int)cmd.ExecuteScalar();
+
+                    
                 }
             }
         }
