@@ -70,5 +70,47 @@ namespace Tabloid.Repositories
                 }
             }
         }
+
+        public Post GetPostById(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"Select p.Id, p.Title, p.Content, p.ImageLocation, p.PublishDateTime, p.UserProfileId,
+
+		                                        up.DisplayName
+
+                                        From Post p
+                                        Join UserProfile up on p.UserProfileId = up.Id
+
+                                        Where p.Id = @Id";
+                    DbUtils.AddParameter(cmd, "@Id", id);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        Post post = null;
+                        if(reader.Read())
+                        {
+                            post = new Post()
+                            {
+                                Id = id,
+                                Title = DbUtils.GetString(reader, "Title"),
+                                Content = DbUtils.GetString(reader, "Content"),
+                                ImageLocation = DbUtils.GetString(reader, "ImageLocation"),
+                                PublishedDateTime = DbUtils.GetDateTime(reader, "PublishDateTime"),
+
+                                Userprofile = new UserProfile()
+                                {
+                                    DisplayName = DbUtils.GetString(reader, "DisplayName")
+                                }
+                            };
+                        }
+                        return post;
+                    }
+                }
+            }
+        }
     }
 }

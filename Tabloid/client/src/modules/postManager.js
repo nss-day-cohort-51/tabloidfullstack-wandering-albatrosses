@@ -18,3 +18,14 @@ export const getAllPosts = () => {
         });
     });
 };
+
+export const getPost = (id) => {
+    return getToken().then((token) => {
+        return fetch(`${baseUrl}/${id}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((res) => res.json()).catch(console.log("nothing found"));
+    })
+}
