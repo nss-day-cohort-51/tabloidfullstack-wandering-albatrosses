@@ -47,7 +47,7 @@ namespace Tabloid.Repositories
                                 Content = DbUtils.GetString(reader, "Content"),
                                 ImageLocation = DbUtils.GetString(reader, "ImageLocation"),
                                 CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
-                                PublishedDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+                                PublishDateTime = DbUtils.GetDateTime(reader, "PublishDateTime"),
                                 IsApproved = DbUtils.GetBool(reader, "IsApproved"),
                                 CategoryId = DbUtils.GetInt(reader, "CategoryId"),
 
@@ -99,7 +99,7 @@ namespace Tabloid.Repositories
                                 Title = DbUtils.GetString(reader, "Title"),
                                 Content = DbUtils.GetString(reader, "Content"),
                                 ImageLocation = DbUtils.GetString(reader, "ImageLocation"),
-                                PublishedDateTime = DbUtils.GetDateTime(reader, "PublishDateTime"),
+                                PublishDateTime = DbUtils.GetDateTime(reader, "PublishDateTime"),
 
                                 Userprofile = new UserProfile()
                                 {
@@ -109,6 +109,34 @@ namespace Tabloid.Repositories
                         }
                         return post;
                     }
+                }
+            }
+        }
+
+        public void Add(Post post)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"Insert Into Post (Title, Content, ImageLocation, CategoryId,
+                                            PublishDateTime, UserProfileId, CreateDateTime, IsApproved)
+                                        Output INSERTED.ID
+                                        Values (@Title, @Content, @ImageLocation,
+                                                @CategoryId, @PublishDateTime, @UserProfileId,
+                                                @CreateDateTime, @IsApproved);";
+
+                    DbUtils.AddParameter(cmd, "@Title", post.Title);
+                    DbUtils.AddParameter(cmd, "@Content", post.Content);
+                    DbUtils.AddParameter(cmd, "@ImageLocation", post.ImageLocation);
+                    DbUtils.AddParameter(cmd, "@CategoryId", post.CategoryId);
+                    DbUtils.AddParameter(cmd, "@PublishDateTime", post.PublishDateTime);
+                    DbUtils.AddParameter(cmd, "@UserProfileId", post.UserProfileId);
+                    DbUtils.AddParameter(cmd, "@CreateDateTime", post.CreateDateTime);
+                    DbUtils.AddParameter(cmd, "@IsApproved", post.IsApproved);
+
+                    post.Id = (int)cmd.ExecuteScalar();
                 }
             }
         }

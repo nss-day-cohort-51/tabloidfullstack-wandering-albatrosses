@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tabloid.Models;
 using Tabloid.Repositories;
 
 namespace Tabloid.Controllers
@@ -38,6 +39,20 @@ namespace Tabloid.Controllers
                 return NotFound();
             }
             return Ok(post);
+        }
+
+        [HttpPost]
+        public IActionResult Post(Post post)
+        {
+            if (string.IsNullOrWhiteSpace(post.Title))
+            {
+                post.Title = null;
+                return NoContent();
+            }
+
+            _postRepo.Add(post);
+
+            return CreatedAtAction("Get", new { id = post.Id }, post);
         }
     }
 }
