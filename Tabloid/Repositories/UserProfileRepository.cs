@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using Tabloid.Models;
 using Tabloid.Utils;
 
@@ -51,6 +53,41 @@ namespace Tabloid.Repositories
                     reader.Close();
 
                     return userProfile;
+                }
+            }
+        }
+
+        public List<UserProfile> GetAllUsers()
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    Select up.DisplayName, up.FirstName, up.LastName, up.UserTypeId
+                    From UserProfile up
+                    
+              ";
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        var users = new List<UserProfile>();
+                        while (reader.Read())
+                        {
+                            users.Add(new UserProfile()
+                            {
+                                DisplayName = DbUtils.GetString(reader, "DisplayName"),
+                                FirstName = DbUtils.GetString(reader, "FirstName"),
+                                LastName = DbUtils.GetString(reader, "LastName"),
+                                UserTypeId = DbUtils.GetInt(reader, "UserTypeId")
+
+                            });
+                        }
+
+                        return users;
+                    }
                 }
             }
         }
