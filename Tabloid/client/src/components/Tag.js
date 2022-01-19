@@ -9,7 +9,7 @@ const Tag = ({ tag, setTags }) => {
 
     const handleClickDeleteTag = () => {
         const confirm = window.confirm("Are you sure you want to delete this tag?")
-        if (confirm == true) {
+        if (confirm === true) {
             deleteTag(tag)
                 .then(() => {
                     getTags().then(tags => setTags(tags))
