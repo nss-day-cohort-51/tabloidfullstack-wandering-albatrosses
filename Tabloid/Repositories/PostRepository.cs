@@ -55,7 +55,12 @@ namespace Tabloid.Repositories
                                 Id = DbUtils.GetInt(reader, "Id"),
                                 Name = DbUtils.GetString(reader, "cName")
                                 },
-                                UserProfileId = DbUtils.GetInt(reader, "UserProfileId")
+
+                                Userprofile = new UserProfile
+                                {
+                                    DisplayName = DbUtils.GetString(reader, "upDisplayName"),
+                                },
+                                    UserProfileId = DbUtils.GetInt(reader, "UserProfileId")
                             });
 
                         }

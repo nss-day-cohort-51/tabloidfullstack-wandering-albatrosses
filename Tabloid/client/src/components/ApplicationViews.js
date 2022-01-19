@@ -11,11 +11,11 @@ export default function ApplicationViews({ isLoggedIn }) {
     <main>
       <Switch>
         <Route path="/" exact>
-          {isLoggedIn ? <Posts /> : <Redirect to="/login" />}
+          Home
         </Route>
 
         <Route path="/Post" exact>
-
+          {isLoggedIn ? <Posts /> : <Redirect to="/login" />}
         </Route>
 
         <Route path="/login">
