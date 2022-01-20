@@ -35,12 +35,19 @@ namespace Tabloid.Controllers
             {
                 return NotFound();
             }
+
+           else if(userProfile.IsActive != true)
+            {
+                return NotFound();
+            }
+
             return Ok();
         }
 
         [HttpPost]
         public IActionResult Post(UserProfile userProfile)
         {
+            userProfile.IsActive = true;
             userProfile.CreateDateTime = DateTime.Now;
             userProfile.UserTypeId = UserType.AUTHOR_ID;
             _userProfileRepository.Add(userProfile);
@@ -49,5 +56,38 @@ namespace Tabloid.Controllers
                 new { firebaseUserId = userProfile.FirebaseUserId },
                 userProfile);
         }
+
+        [HttpPut("ReactivateUserProfile")]
+        public ActionResult ReactivateUser(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileById(id);
+
+            userProfile.IsActive = true;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
+
+
+        }
+
+
+
+
+        [HttpPut("DeactivateUserProfile")]
+        public ActionResult DeactivateUser(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileById(id);
+
+            userProfile.IsActive = false;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
+
+
+        }
+
+
+
+
     }
 }
