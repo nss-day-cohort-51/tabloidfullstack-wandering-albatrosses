@@ -12,7 +12,7 @@ const User = ({ user }) => {
                    
                 <p>Name: {user.firstName} {user.lastName}</p>
                 <p>User Type: {user.userTypeId}</p>    
-                <button onClick={() => history.push(`/userdetails/${user.id}`)}> User Details</button>
+                <button onClick={() => history.push(`/users/userdetails/${user.id}`)}> User Details</button>
                 </CardBody>
             </Card>
         );

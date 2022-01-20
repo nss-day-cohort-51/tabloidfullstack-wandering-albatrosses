@@ -4,7 +4,7 @@ import User from "./User";
 import { getUser } from "../modules/userManager";
 
 const UserDetails = () => {
-    const [user, setUser] = useState();
+    const [user, setUser] = useState({});
     const { id } = useParams();
 
     useEffect(() => {
@@ -19,8 +19,11 @@ const UserDetails = () => {
         <div className="container">
             <div className="row justify-content-center">
                 <div className="col-sm-12 col-lg-6">
-                    <User user={user} key={user.id} />
-                    <p>${user.displayName}</p>
+                    <p>Name: {user.firstName}, {user.lastName}</p>
+                    <p>Email: {user.email}</p>
+                    <p>Display name: {user.displayName}</p>
+                    <p>Creation Date: {user.createDateTime}</p>
+                    <p>User Type: {user.userTypeId}</p>
                 </div>
             </div>
         </div>

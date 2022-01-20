@@ -82,13 +82,15 @@ left join UserProfile Up on Up.Id = C.UserProfileId
                     cmd.CommandText = @"INSERT INTO Comment (Content, UserProfileId, CreateDateTime, PostId, Subject)
                                         OUTPUT INSERTED.ID
                                         VALUES (@Content, @UserProfileId, @CreateDateTime, @PostId, @Subject)";
-                    DbUtils.AddParameter(cmd, "@Content", comment.Content);
-                    DbUtils.AddParameter(cmd, "@CreateDateTime", comment.CreateDateTime);
-                    DbUtils.AddParameter(cmd, "@UserProfileId", comment.UserProfileId);
-                    DbUtils.AddParameter(cmd, "@PostId", comment.PostId);
-                    DbUtils.AddParameter(cmd, "@Subject", comment.Subject);
+                    cmd.Parameters.AddWithValue( "@Content", comment.Content);
+                    cmd.Parameters.AddWithValue( "@CreateDateTime", comment.CreateDateTime);
+                    cmd.Parameters.AddWithValue( "@UserProfileId", comment.UserProfileId);
+                    cmd.Parameters.AddWithValue( "@PostId", comment.PostId);
+                    cmd.Parameters.AddWithValue( "@Subject", comment.Subject);
 
                     comment.Id = (int)cmd.ExecuteScalar();
+
+                    
                 }
             }
         }
@@ -111,12 +113,12 @@ left join UserProfile Up on Up.Id = C.UserProfileId
                                UserProfileId = @UserProfileId
                          WHERE Id = @Id";
 
-                    DbUtils.AddParameter(cmd, "@Subject", comment.Subject);
-                    DbUtils.AddParameter(cmd, "@Content", comment.Content);
-                    DbUtils.AddParameter(cmd, "@CreateDateTime", comment.CreateDateTime);
-                    DbUtils.AddParameter(cmd, "@PostId", comment.PostId);
-                    DbUtils.AddParameter(cmd, "@UserProfileId", comment.UserProfileId);
-                    DbUtils.AddParameter(cmd, "@Id", comment.Id);
+                    cmd.Parameters.AddWithValue( "@Subject", comment.Subject);
+                    cmd.Parameters.AddWithValue( "@Content", comment.Content);
+                    cmd.Parameters.AddWithValue("@CreateDateTime", comment.CreateDateTime);
+                    cmd.Parameters.AddWithValue( "@PostId", comment.PostId);
+                    cmd.Parameters.AddWithValue( "@UserProfileId", comment.UserProfileId);
+                    cmd.Parameters.AddWithValue("@Id", comment.Id);
 
                     cmd.ExecuteNonQuery();
                 }

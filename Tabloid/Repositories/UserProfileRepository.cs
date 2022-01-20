@@ -65,7 +65,7 @@ namespace Tabloid.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                    Select up.DisplayName, up.FirstName, up.LastName, up.UserTypeId
+                    Select up.Id, up.DisplayName, up.FirstName, up.LastName, up.UserTypeId
                     From UserProfile up
                     
               ";
@@ -78,6 +78,7 @@ namespace Tabloid.Repositories
                         {
                             users.Add(new UserProfile()
                             {
+                                Id = DbUtils.GetInt(reader, "Id"),
                                 DisplayName = DbUtils.GetString(reader, "DisplayName"),
                                 FirstName = DbUtils.GetString(reader, "FirstName"),
                                 LastName = DbUtils.GetString(reader, "LastName"),
@@ -122,6 +123,7 @@ namespace Tabloid.Repositories
                                 LastName = DbUtils.GetString(reader, "LastName"),
                                 FirebaseUserId = DbUtils.GetString(reader, "FirebaseUserId"),
                                 CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+                                UserTypeId = DbUtils.GetInt(reader, "UserTypeId")
 
                             };
 

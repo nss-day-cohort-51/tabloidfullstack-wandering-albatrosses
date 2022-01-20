@@ -15,7 +15,7 @@ export const getAllUsers = () => {
 }
 
 export const getUser = (id) => {
-    return getToken().then(token => {
+    return getToken().then((token) => {
     return fetch(`${baseUrl}/GetUserProfileById/${id}`, {
         method: "GET",
             headers: {
