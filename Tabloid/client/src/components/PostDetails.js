@@ -22,7 +22,7 @@ const PostDetails = () => {
                     <h1>Title: {post.title}</h1>
                     <h2>Content: {post.content}</h2>
                     <h3>Publish Date: {post.publishedDateTime}</h3>
-                    <h4>Author: {post.userprofile.displayName}</h4>
+                    {/* <h4>Author: {post.userprofile.displayName}</h4> */}
                 </div>
             </div>
         </div>

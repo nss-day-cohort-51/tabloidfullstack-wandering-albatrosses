@@ -125,7 +125,7 @@ namespace Tabloid.Repositories
                                         Output INSERTED.ID
                                         Values (@Title, @Content, @ImageLocation,
                                                 @CategoryId, @PublishDateTime, @UserProfileId,
-                                                @CreateDateTime, @IsApproved);";
+                                                SysDateTime(), @IsApproved);";
 
                     DbUtils.AddParameter(cmd, "@Title", post.Title);
                     DbUtils.AddParameter(cmd, "@Content", post.Content);
@@ -133,12 +133,25 @@ namespace Tabloid.Repositories
                     DbUtils.AddParameter(cmd, "@CategoryId", post.CategoryId);
                     DbUtils.AddParameter(cmd, "@PublishDateTime", post.PublishDateTime);
                     DbUtils.AddParameter(cmd, "@UserProfileId", post.UserProfileId);
-                    DbUtils.AddParameter(cmd, "@CreateDateTime", post.CreateDateTime);
                     DbUtils.AddParameter(cmd, "@IsApproved", post.IsApproved);
 
                     post.Id = (int)cmd.ExecuteScalar();
+
+
                 }
             }
         }
+
+        //public void Update(Post post)
+        //{
+        //    using (var conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (var cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = @""
+        //        }
+        //    }
+        //}
     }
 }
