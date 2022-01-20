@@ -1,8 +1,9 @@
 import React from "react";
 import { Card, CardBody } from "reactstrap";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const User = ({ user }) => {
-
+    const history = useHistory()
     {
         return (
             <Card >
@@ -11,7 +12,7 @@ const User = ({ user }) => {
                    
                 <p>Name: {user.firstName} {user.lastName}</p>
                 <p>User Type: {user.userTypeId}</p>    
-
+                <button onClick={() => history.push(`/userdetails/${user.id}`)}> User Details</button>
                 </CardBody>
             </Card>
         );

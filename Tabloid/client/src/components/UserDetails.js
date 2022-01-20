@@ -1,0 +1,30 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import User from "./User";
+import { getUser } from "../modules/userManager";
+
+const UserDetails = () => {
+    const [user, setUser] = useState();
+    const { id } = useParams();
+
+    useEffect(() => {
+        getUser(id).then(res => setUser(res));
+    }, []);
+
+    if (!user) {
+        return null;
+    }
+
+    return (
+        <div className="container">
+            <div className="row justify-content-center">
+                <div className="col-sm-12 col-lg-6">
+                    <User user={user} key={user.id} />
+                    <p>${user.displayName}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default UserDetails;

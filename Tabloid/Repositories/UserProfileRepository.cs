@@ -92,6 +92,49 @@ namespace Tabloid.Repositories
             }
         }
 
+        public UserProfile GetUserProfileById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        select Id, DisplayName,  Email, FirstName, LastName, FirebaseUserId, CreateDateTime, ImageLocation, UserTypeId
+                        from UserProfile
+                        Where Id = @Id
+                    ";
+
+                    DbUtils.AddParameter(cmd, "@Id", id);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        UserProfile userProfile = null;
+
+                        if (reader.Read())
+                        {
+                            userProfile = new UserProfile
+                            {
+                                Id = id,
+                                DisplayName = DbUtils.GetString(reader, "DisplayName"),
+                                Email = DbUtils.GetString(reader, "Email"),
+                                FirstName = DbUtils.GetString(reader, "FirstName"),
+                                LastName = DbUtils.GetString(reader, "LastName"),
+                                FirebaseUserId = DbUtils.GetString(reader, "FirebaseUserId"),
+                                CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+
+                            };
+
+                        }
+                            return userProfile;
+                        
+                        
+                    }
+                }
+            }
+        }
+    
+
         public void Add(UserProfile userProfile)
         {
             using (var conn = Connection)
