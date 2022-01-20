@@ -65,7 +65,7 @@ namespace Tabloid.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                    Select up.DisplayName, up.FirstName, up.LastName, up.UserTypeId
+                    Select up.Id, up.DisplayName, up.FirstName, up.LastName, up.UserTypeId
                     From UserProfile up
                     
               ";
@@ -78,6 +78,7 @@ namespace Tabloid.Repositories
                         {
                             users.Add(new UserProfile()
                             {
+                                Id = DbUtils.GetInt(reader, "Id"),
                                 DisplayName = DbUtils.GetString(reader, "DisplayName"),
                                 FirstName = DbUtils.GetString(reader, "FirstName"),
                                 LastName = DbUtils.GetString(reader, "LastName"),
@@ -91,6 +92,50 @@ namespace Tabloid.Repositories
                 }
             }
         }
+
+        public UserProfile GetUserProfileById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        select Id, DisplayName,  Email, FirstName, LastName, FirebaseUserId, CreateDateTime, ImageLocation, UserTypeId
+                        from UserProfile
+                        Where Id = @Id
+                    ";
+
+                    DbUtils.AddParameter(cmd, "@Id", id);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        UserProfile userProfile = null;
+
+                        if (reader.Read())
+                        {
+                            userProfile = new UserProfile
+                            {
+                                Id = id,
+                                DisplayName = DbUtils.GetString(reader, "DisplayName"),
+                                Email = DbUtils.GetString(reader, "Email"),
+                                FirstName = DbUtils.GetString(reader, "FirstName"),
+                                LastName = DbUtils.GetString(reader, "LastName"),
+                                FirebaseUserId = DbUtils.GetString(reader, "FirebaseUserId"),
+                                CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+                                UserTypeId = DbUtils.GetInt(reader, "UserTypeId")
+
+                            };
+
+                        }
+                            return userProfile;
+                        
+                        
+                    }
+                }
+            }
+        }
+    
 
         public void Add(UserProfile userProfile)
         {

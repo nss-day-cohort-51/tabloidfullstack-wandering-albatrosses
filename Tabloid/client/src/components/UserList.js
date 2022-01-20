@@ -6,7 +6,8 @@ const UserList = () => {
     const [users, setUsers] = useState([]);
 
     const getUsers = () => {
-        getAllUsers().then(users => setUsers(users));
+        getAllUsers().then(users => 
+            {setUsers(users)});
     };
 
     useEffect(() => {
