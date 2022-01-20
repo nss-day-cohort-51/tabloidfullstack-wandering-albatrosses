@@ -66,7 +66,7 @@ namespace Tabloid.Controllers
         [HttpPut("ReactivateUserProfile")]
         public ActionResult ReactivateUser(int id)
         {
-            UserProfile userProfile = _userProfileRepository.GetUserProfileById(id);
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
 
             userProfile.IsActive = true;
             _userProfileRepository.ReactivateAndDeactivate(userProfile);
@@ -82,7 +82,7 @@ namespace Tabloid.Controllers
         [HttpPut("DeactivateUserProfile")]
         public ActionResult DeactivateUser(int id)
         {
-            UserProfile userProfile = _userProfileRepository.GetUserProfileById(id);
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
 
             userProfile.IsActive = false;
             _userProfileRepository.ReactivateAndDeactivate(userProfile);
