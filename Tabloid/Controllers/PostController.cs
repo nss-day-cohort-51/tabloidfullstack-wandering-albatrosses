@@ -67,7 +67,8 @@ namespace Tabloid.Controllers
             return StatusCode(403);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete(int id)
         {
             _postRepo.Delete(id);
