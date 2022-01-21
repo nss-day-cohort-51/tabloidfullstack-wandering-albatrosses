@@ -67,6 +67,13 @@ namespace Tabloid.Controllers
             return StatusCode(403);
         }
 
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            _postRepo.Delete(id);
+            return NoContent();
+        }
+
         //[HttpPut]
         //public IActionResult Put(int id, Post post)
         //{
