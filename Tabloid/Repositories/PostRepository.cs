@@ -142,6 +142,24 @@ namespace Tabloid.Repositories
             }
         }
 
+        public void Delete(int postId)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"Delete From Post
+                                        Where Id = @id";
+
+                    DbUtils.AddParameter(cmd, "@id", postId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
         //public void Update(Post post)
         //{
         //    using (var conn = Connection)

@@ -27,7 +27,7 @@ export const Posts = ({ post }) => {
 
     return (
         <>
-            {posts.map(post => <PostCard key={post.id} post={post} />)}
+            {posts.map(post => <PostCard key={post.id} post={post} setPosts={setPosts} />)}
             <button onClick={() => history.push("/Post/create")}>Create a Post</button>
         </>
     )

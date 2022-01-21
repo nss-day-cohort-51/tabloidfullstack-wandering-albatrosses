@@ -44,18 +44,26 @@ export const addPost = (post) => {
 }
 
 export const deletePost = (post) => {
-    return fetch(`${baseUrl}/${post.id}`, {
-        method: "DELETE"
+    return getToken().then((token) => {
+        return fetch(`${baseUrl}/${post.id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        })
     })
 }
 
 export const updatePost = (post) => {
-    return fetch(`${baseUrl}/${post.id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(post),
-    }).then(getAllPosts());
+    return getToken().then((token) => {
+        return fetch(`${baseUrl}/${post.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(post),
+        }).then(getAllPosts());
+    })
 }
 
