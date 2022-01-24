@@ -9,6 +9,7 @@ import UserList from "./UserList";
 import UserDetails from "./UserDetails";
 import PostDetails from "./PostDetails";
 import PostForm from "./PostForm";
+import { UpdateUserForm } from "./UserEditForm";
 
 export default function ApplicationViews({ isLoggedIn }) {
 
@@ -57,6 +58,9 @@ export default function ApplicationViews({ isLoggedIn }) {
 
         <Route path="/tag/create/:id" exact>
           {isLoggedIn ? <TagForm /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/users/UserTypeEdit/:id">
+          {isLoggedIn ? <UpdateUserForm /> : <Redirect to="/login" />}
         </Route>
       </Switch>
     </main>

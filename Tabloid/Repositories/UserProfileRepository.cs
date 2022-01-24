@@ -157,9 +157,10 @@ namespace Tabloid.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        select Id, DisplayName,  Email, FirstName, LastName, FirebaseUserId, CreateDateTime, ImageLocation, UserTypeId
-                        from UserProfile
-                        Where Id = @Id
+                        select up.Id, up.DisplayName,  up.Email, up.FirstName, up.LastName, up.FirebaseUserId, up.CreateDateTime, up.ImageLocation, up.UserTypeId, ut.Id  typeId, ut.Name  typeName
+                        from UserProfile up
+                        left join UserType ut on up.UserTypeId = ut.Id
+                        Where up.Id = @Id
                     ";
 
                     DbUtils.AddParameter(cmd, "@Id", id);
@@ -179,7 +180,13 @@ namespace Tabloid.Repositories
                                 LastName = DbUtils.GetString(reader, "LastName"),
                                 FirebaseUserId = DbUtils.GetString(reader, "FirebaseUserId"),
                                 CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
-                                UserTypeId = DbUtils.GetInt(reader, "UserTypeId")
+                                UserTypeId = DbUtils.GetInt(reader, "UserTypeId"),
+                                UserType = new UserType
+                                {
+                                    Id = DbUtils.GetInt(reader, "typeId"),
+                                    Name = DbUtils.GetString(reader, "typeName")
+
+                                }
 
                             };
 
@@ -270,21 +277,60 @@ namespace Tabloid.Repositories
 
         }
 
-
-
-        /*
-        public UserProfile GetByFirebaseUserId(string firebaseUserId)
+        public List<UserType> AllUserTypes() 
         {
-            return _context.UserProfile
-                       .Include(up => up.UserType) 
-                       .FirstOrDefault(up => up.FirebaseUserId == firebaseUserId);
+            using (var conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        select * from UserType
+                        
+                    ";
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                       var userTypes = new List<UserType>();
+
+                        while (reader.Read())
+                        {
+
+                            userTypes.Add(new UserType()
+                            {
+                                Id = DbUtils.GetInt(reader, "Id"),
+                                Name = DbUtils.GetString(reader, "Name")
+                            });
+
+                        }
+                        return userTypes;
+
+                    }
+                }
+            }
+           
         }
 
-        public void Add(UserProfile userProfile)
+        public void UpdateUserTypeId(int userTypeId, int userId)
         {
-            _context.Add(userProfile);
-            _context.SaveChanges();
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+
+
+                    cmd.CommandText = @"UPDATE UserProfile 
+                                           SET UserTypeId = @userTypeId
+                                         WHERE id = @id";
+
+                    cmd.Parameters.AddWithValue("@userTypeId", userTypeId);
+                    cmd.Parameters.AddWithValue("@id", userId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
-        */
     }
 }
