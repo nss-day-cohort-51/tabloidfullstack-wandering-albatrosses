@@ -92,8 +92,37 @@ namespace Tabloid.Controllers
 
         }
 
+        [HttpPut("UpdateUserType2/userId")]
+        public ActionResult UpdateUserType2(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
+
+            userProfile.UserTypeId = 2;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
 
 
+        }
+
+        [HttpPut("UpdateUserType1/userId")]
+        public ActionResult UpdateUserType1(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
+
+            userProfile.UserTypeId = 1;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
+
+
+        }
+
+        [HttpGet("GetUserTypes")]
+        public IActionResult AllUserTypes()
+        {
+            return Ok(_userProfileRepository.AllUserTypes());
+        }
 
     }
 }
