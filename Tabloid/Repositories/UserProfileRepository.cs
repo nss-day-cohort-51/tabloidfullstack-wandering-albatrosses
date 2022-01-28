@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 using Tabloid.Models;
 using Tabloid.Utils;
 
@@ -8,6 +11,60 @@ namespace Tabloid.Repositories
     {
         public UserProfileRepository(IConfiguration configuration) : base(configuration) { }
 
+
+        public UserProfile GetUserProfileId(int id)
+        {
+
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                       SELECT u.id, u.FirebaseUserId, u.FirstName, u.LastName, u.DisplayName, u.Email,
+                              u.CreateDateTime, u.ImageLocation, u.UserTypeId, u.IsActive,
+                              ut.[Name] AS UserTypeName
+                         FROM UserProfile u
+                              LEFT JOIN UserType ut ON u.UserTypeId = ut.id
+                        WHERE u.Id = @Id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    UserProfile userProfile = null;
+                    var reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        userProfile = new UserProfile()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirebaseUserId = reader.GetString(reader.GetOrdinal("FirebaseUserId")),
+                            Email = reader.GetString(reader.GetOrdinal("Email")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            DisplayName = reader.GetString(reader.GetOrdinal("DisplayName")),
+                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                            ImageLocation = DbUtils.GetString(reader, "ImageLocation"),
+                            UserTypeId = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
+                            UserType = new UserType()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
+                                Name = reader.GetString(reader.GetOrdinal("UserTypeName"))
+                            },
+                        };
+
+                    }
+
+                    reader.Close();
+
+                    return userProfile;
+                }
+            }
+
+
+        }
+
+
         public UserProfile GetByFirebaseUserId(string firebaseUserId)
         {
             using (var conn = Connection)
@@ -16,7 +73,7 @@ namespace Tabloid.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT up.Id, Up.FirebaseUserId, up.FirstName, up.LastName, up.DisplayName, 
+                        SELECT up.Id, Up.FirebaseUserId, up.FirstName, up.LastName, up.DisplayName, up.IsActive,  
                                up.Email, up.CreateDateTime, up.ImageLocation, up.UserTypeId,
                                ut.Name AS UserTypeName
                           FROM UserProfile up
@@ -40,6 +97,7 @@ namespace Tabloid.Repositories
                             Email = DbUtils.GetString(reader, "Email"),
                             CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
                             ImageLocation = DbUtils.GetString(reader, "ImageLocation"),
+                            IsActive = DbUtils.GetBool(reader, "IsActive"),
                             UserTypeId = DbUtils.GetInt(reader, "UserTypeId"),
                             UserType = new UserType()
                             {
@@ -54,6 +112,93 @@ namespace Tabloid.Repositories
                 }
             }
         }
+
+        public List<UserProfile> GetAllUsers()
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    Select up.Id, up.DisplayName, up.FirstName, up.LastName, up.UserTypeId
+                    From UserProfile up
+                    
+              ";
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        var users = new List<UserProfile>();
+                        while (reader.Read())
+                        {
+                            users.Add(new UserProfile()
+                            {
+                                Id = DbUtils.GetInt(reader, "Id"),
+                                DisplayName = DbUtils.GetString(reader, "DisplayName"),
+                                FirstName = DbUtils.GetString(reader, "FirstName"),
+                                LastName = DbUtils.GetString(reader, "LastName"),
+                                UserTypeId = DbUtils.GetInt(reader, "UserTypeId")
+
+                            });
+                        }
+
+                        return users;
+                    }
+                }
+            }
+        }
+
+        public UserProfile GetUserProfileById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        select up.Id, up.DisplayName,  up.Email, up.FirstName, up.LastName, up.FirebaseUserId, up.CreateDateTime, up.ImageLocation, up.UserTypeId, ut.Id  typeId, ut.Name  typeName
+                        from UserProfile up
+                        left join UserType ut on up.UserTypeId = ut.Id
+                        Where up.Id = @Id
+                    ";
+
+                    DbUtils.AddParameter(cmd, "@Id", id);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        UserProfile userProfile = null;
+
+                        if (reader.Read())
+                        {
+                            userProfile = new UserProfile
+                            {
+                                Id = id,
+                                DisplayName = DbUtils.GetString(reader, "DisplayName"),
+                                Email = DbUtils.GetString(reader, "Email"),
+                                FirstName = DbUtils.GetString(reader, "FirstName"),
+                                LastName = DbUtils.GetString(reader, "LastName"),
+                                FirebaseUserId = DbUtils.GetString(reader, "FirebaseUserId"),
+                                CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+                                UserTypeId = DbUtils.GetInt(reader, "UserTypeId"),
+                                UserType = new UserType
+                                {
+                                    Id = DbUtils.GetInt(reader, "typeId"),
+                                    Name = DbUtils.GetString(reader, "typeName")
+
+                                }
+
+                            };
+
+                        }
+                            return userProfile;
+                        
+                        
+                    }
+                }
+            }
+        }
+    
 
         public void Add(UserProfile userProfile)
         {
@@ -81,19 +226,111 @@ namespace Tabloid.Repositories
             }
         }
 
-        /*
-        public UserProfile GetByFirebaseUserId(string firebaseUserId)
+
+
+        public void ReactivateAndDeactivate(UserProfile userProfile)
         {
-            return _context.UserProfile
-                       .Include(up => up.UserType) 
-                       .FirstOrDefault(up => up.FirebaseUserId == firebaseUserId);
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE UserProfile
+                            SET 
+                                DisplayName = @displayName, 
+                                FirstName = @firstName, 
+                                LastName = @lastName, 
+                                Email = @email,
+                                CreateDateTime = @createDateTime,
+                                ImageLocation = @imageLocation,
+                                IsActive = @isActive,
+                                UserTypeId = @userTypeId
+                           WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@displayName", userProfile.DisplayName);
+                    cmd.Parameters.AddWithValue("@firstName", userProfile.FirstName);
+                    cmd.Parameters.AddWithValue("@lastName", userProfile.LastName);
+                    cmd.Parameters.AddWithValue("@email", userProfile.Email);
+                    cmd.Parameters.AddWithValue("@createDateTime", userProfile.CreateDateTime);
+                    if (userProfile.ImageLocation == null)
+                    {
+                        cmd.Parameters.AddWithValue("@imagelocation", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@imageLocation", userProfile.ImageLocation);
+                    }
+                    cmd.Parameters.AddWithValue("@isActive", userProfile.IsActive);
+                    cmd.Parameters.AddWithValue("@userTypeId", userProfile.UserTypeId);
+                    cmd.Parameters.AddWithValue("@id", userProfile.Id);
+
+
+
+
+
+                    cmd.ExecuteNonQuery();
+
+                }
+            }
+
         }
 
-        public void Add(UserProfile userProfile)
+        public List<UserType> AllUserTypes() 
         {
-            _context.Add(userProfile);
-            _context.SaveChanges();
+            using (var conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        select * from UserType
+                        
+                    ";
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                       var userTypes = new List<UserType>();
+
+                        while (reader.Read())
+                        {
+
+                            userTypes.Add(new UserType()
+                            {
+                                Id = DbUtils.GetInt(reader, "Id"),
+                                Name = DbUtils.GetString(reader, "Name")
+                            });
+
+                        }
+                        return userTypes;
+
+                    }
+                }
+            }
+           
         }
-        */
+
+        public void UpdateUserTypeId(int userTypeId, int userId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+
+
+                    cmd.CommandText = @"UPDATE UserProfile 
+                                           SET UserTypeId = @userTypeId
+                                         WHERE id = @id";
+
+                    cmd.Parameters.AddWithValue("@userTypeId", userTypeId);
+                    cmd.Parameters.AddWithValue("@id", userId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

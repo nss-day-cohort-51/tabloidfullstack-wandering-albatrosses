@@ -15,10 +15,22 @@ namespace Tabloid.Controllers
             _userProfileRepository = userProfileRepository;
         }
 
+        [HttpGet("GetAllUsers")]
+        public IActionResult Get()
+        {
+            return Ok(_userProfileRepository.GetAllUsers());
+        }
+
         [HttpGet("{firebaseUserId}")]
         public IActionResult GetUserProfile(string firebaseUserId)
         {
             return Ok(_userProfileRepository.GetByFirebaseUserId(firebaseUserId));
+        }
+
+        [HttpGet("GetUserProfileById/{id}")]
+        public IActionResult GetUserProfileById(int id)
+        {
+            return Ok(_userProfileRepository.GetUserProfileById(id));
         }
 
         [HttpGet("DoesUserExist/{firebaseUserId}")]
@@ -29,12 +41,19 @@ namespace Tabloid.Controllers
             {
                 return NotFound();
             }
+
+           else if(userProfile.IsActive != true)
+            {
+                return NotFound();
+            }
+
             return Ok();
         }
 
         [HttpPost]
         public IActionResult Post(UserProfile userProfile)
         {
+            userProfile.IsActive = true;
             userProfile.CreateDateTime = DateTime.Now;
             userProfile.UserTypeId = UserType.AUTHOR_ID;
             _userProfileRepository.Add(userProfile);
@@ -43,5 +62,67 @@ namespace Tabloid.Controllers
                 new { firebaseUserId = userProfile.FirebaseUserId },
                 userProfile);
         }
+
+        [HttpPut("ReactivateUserProfile")]
+        public ActionResult ReactivateUser(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
+
+            userProfile.IsActive = true;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
+
+
+        }
+
+
+
+
+        [HttpPut("DeactivateUserProfile")]
+        public ActionResult DeactivateUser(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
+
+            userProfile.IsActive = false;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
+
+
+        }
+
+        [HttpPut("UpdateUserType2/userId")]
+        public ActionResult UpdateUserType2(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
+
+            userProfile.UserTypeId = 2;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
+
+
+        }
+
+        [HttpPut("UpdateUserType1/userId")]
+        public ActionResult UpdateUserType1(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetUserProfileId(id);
+
+            userProfile.UserTypeId = 1;
+            _userProfileRepository.ReactivateAndDeactivate(userProfile);
+
+            return Ok();
+
+
+        }
+
+        [HttpGet("GetUserTypes")]
+        public IActionResult AllUserTypes()
+        {
+            return Ok(_userProfileRepository.AllUserTypes());
+        }
+
     }
 }
